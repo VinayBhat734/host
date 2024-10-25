@@ -1,0 +1,38 @@
+Name
+Customer Unique Code
+Clinic/College/Company Name
+Designation
+Department
+Address
+MobileNo
+Whatsapp Availability
+Alternative Mobile Number
+Alternative Mobile Number 2
+ALternative Mobile Number 3
+Telephone
+Drug License No
+GST #
+E-mail Id
+Website
+City
+State
+Country
+District
+Pincode
+Type
+Source
+Status(Active/Inactive)
+Enquiry
+Last Purchased Date
+Branch Data
+Under Sales person
+Create Date
+Age of Data
+Tags
+Tags 2
+Tags 3
+Tags 4
+Tags 5
+Last Updated Date
+
+

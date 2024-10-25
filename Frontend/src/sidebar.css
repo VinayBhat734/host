@@ -1,0 +1,17 @@
+/* sidebar.css */
+
+.custom-menu {
+  background-color: #2d3748; /* bg-gray-800 color in Tailwind */
+}
+
+.custom-menu .ant-menu-item,
+.custom-menu .ant-menu-submenu-title {
+  color: #edf2f7; /* bg-gray-100 color for text */
+}
+
+.custom-menu .ant-menu-item:hover,
+.custom-menu .ant-menu-item-active,
+.custom-menu .ant-menu-submenu-title:hover {
+  background-color: #4a5568; /* bg-gray-700 color in Tailwind */
+  color: #f7fafc; /* bg-gray-50 color for text */
+}

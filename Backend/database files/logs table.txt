@@ -1,0 +1,10 @@
+CREATE TABLE logs(
+    id serial primary key,
+    username VARCHAR(500),
+    file_name VARCHAR(500),
+    record_count integer,
+    operation_type VARCHAR(500),
+    updated_count integer,
+    inserted_count integer,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)

@@ -1,0 +1,99 @@
+router.post("/analyze", upload.single("file"), async (req, res) => {
+  const results = [];
+  let duplicateCount = 0;
+  let genuineCount = 0;
+
+  if (!req.file) {
+    return res.status(400).send("No file uploaded");
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const filePath = req.file.path;
+  await workbook.xlsx.readFile(filePath);
+  const worksheet = workbook.getWorksheet(1);
+  const excelHeaders = worksheet.getRow(1).values.slice(1);
+
+  const mobileNumbers = new Set();
+
+  for (let rowNumber = 2; rowNumber <= worksheet.rowCount; rowNumber++) {
+    const row = worksheet.getRow(rowNumber);
+    const rowData = {};
+  
+    Object.keys(columnMapping).forEach((dbColumn) => {
+      const excelHeader = columnMapping[dbColumn];
+      const colIndex = excelHeaders.indexOf(excelHeader) + 1;
+      if (colIndex > 0) {
+        rowData[dbColumn] = row.getCell(colIndex).value;
+      }
+    });
+  
+    const mobileNo = rowData.mobileno ? String(rowData.mobileno).trim() : null;
+    if (!mobileNo) continue; // Skip if MobileNo is not provided
+  
+    if (mobileNumbers.has(mobileNo)) {
+      duplicateCount++;
+      results.push({ MobileNo: mobileNo, Genuine: false });
+      continue; // Skip further checks for duplicates
+    }
+  
+    mobileNumbers.add(mobileNo);
+    const result = await pool.query(
+      'SELECT * FROM "contacts" WHERE "mobileno" = $1',
+      [mobileNo]
+    );
+  
+    const comparisonResults = { MobileNo: mobileNo, Genuine: true }; // Assume genuine initially
+  
+    if (result.rows.length > 0) {
+      duplicateCount++;
+      comparisonResults.Genuine = false; // Mark as duplicate
+      const dbData = result.rows[0];
+  
+      // Compare each field
+      Object.keys(columnMapping).forEach((dbColumn) => {
+        const excelValue = rowData[dbColumn];
+        const dbValue = dbData[dbColumn];
+
+        // Store both values in separate fields
+        if (excelValue) {
+          comparisonResults[`${columnMapping[dbColumn]} (Excel)`] = excelValue;
+        }
+        if (dbValue !== null) {
+          comparisonResults[`${columnMapping[dbColumn]} (DB)`] = dbValue;
+        }
+      });
+    } else {
+      genuineCount++;
+      // Add values if genuine, comparing each field similarly
+      Object.keys(columnMapping).forEach((dbColumn) => {
+        const excelValue = rowData[dbColumn];
+        if (excelValue) {
+          comparisonResults[`${columnMapping[dbColumn]} (Excel)`] = excelValue;
+        }
+      });
+    }
+  
+    results.push(comparisonResults);
+  }
+
+  const resultWorkbook = new ExcelJS.Workbook();
+  const resultWorksheet = resultWorkbook.addWorksheet("Results");
+
+  // Define headers with separate columns for Excel and DB values
+  const headers = ["MobileNo", "Genuine", ...Object.values(columnMapping).flatMap(col => [ `${col} (Excel)`, `${col} (DB)` ])];
+  resultWorksheet.columns = headers.map(header => ({ header, key: header }));
+
+  results.forEach((result) => {
+    resultWorksheet.addRow(result);
+  });
+
+  const resultFilePath = `uploads/results_${Date.now()}.xlsx`;
+  await resultWorkbook.xlsx.writeFile(resultFilePath);
+
+  res.json({
+    results,
+    duplicateCount,
+    genuineCount,
+    downloadUrl: resultFilePath.replace("uploads/", ""), 
+  });
+});

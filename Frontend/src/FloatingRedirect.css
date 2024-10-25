@@ -1,0 +1,29 @@
+.floating-object {
+    position: fixed;
+    bottom: 50px; /* Adjust as needed */
+    left: 7px; /* Adjust as needed */
+    width: 60px; /* Size of the floating object */
+    height: 60px; /* Size of the floating object */
+    background-color: rgb(212, 9, 9); /* Change color as needed */
+    color: white; /* Text color */
+
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer; /* Change cursor on hover */
+    transition: transform 0.3s; /* Smooth hover effect */
+  }
+  
+  .floating-object:hover {
+    transform: scale(1.1); /* Slightly increase size on hover */
+  }
+  
+  .image {
+    background-color: white;
+    border-radius: 60%;
+    padding: 2px;
+    
+    
+  }

@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type='password'],
+input[type='username'],
+input[type='email'] {
+    @apply mt-5 w-full border border-black my-2 py-2 px-3 rounded-2xl;
+}
+
+.data-grid .MuiDataGrid-columnHeaders {
+    font-weight: bold;
+  }
+  
+  /* src/index.css */
+body {
+    font-family: 'Poppins', sans-serif;
+  }
+  
